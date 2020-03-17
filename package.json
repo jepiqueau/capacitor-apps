@@ -1,0 +1,26 @@
+{
+    "name": "ionic-angular-test-jeep-plugins",
+    "version": "0.0.1",
+    "description": "Test Jeep Capacitor Plugins Apps ",
+    "author": "Jean Pierre Quéau",
+    "license": "MIT",
+    "keywords": [
+        "capacitor",
+        "plugin",
+        "native",
+        "storage",
+        "database",
+        "sqlite",
+        "video",
+        "player",
+        "testing",
+        "application"
+    ],    
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jepiqueau/capacitor-apps.git"
+    },
+    "bugs": {
+        "url": "https://github.com/jepiqueau/capacitor-apps/issues"
+    }
+}
