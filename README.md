@@ -1,11 +1,11 @@
 # Applications testing the Jeep Capacitor Plugins 
 
 Theses applications will involve the following capacitor plugins:
-- [capacitor-video-player] (https://github.com/jepiqueau/capacitor-video-player/blob/master/README.md)
+- [capacitor-video-player] (https://github.com/jepiqueau/capacitor-video-player)
 
-- [capacitor-data-storage-sqlite] (https://github.com/jepiqueau/capacitor-data-storage-sqlite/blob/master/README.md)
+- [capacitor-data-storage-sqlite] (https://github.com/jepiqueau/capacitor-data-storage-sqlite)
 
-- [capacitor-sqlite] (https://github.com/jepiqueau/capacitor-sqlite/blob/master/README.md)
+- [capacitor-sqlite] (https://github.com/jepiqueau/capacitor-sqlite)
 
 
 ## Ionic/Angular
