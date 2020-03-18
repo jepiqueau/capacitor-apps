@@ -5,11 +5,11 @@ import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
 
+import java.util.ArrayList;
+
 import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
 import com.jeep.plugin.capacitor.CapacitorDataStorageSqlite;
 import com.jeep.plugin.capacitor.CapacitorSQLite;
-
-import java.util.ArrayList;
 
 public class MainActivity extends BridgeActivity {
   @Override

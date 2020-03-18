@@ -1,5 +1,4 @@
 import { Plugins } from '@capacitor/core';
-//import * as PluginsLibrary from '@jeepq/capacitor';
 import * as CapacitorVPPlugin from 'capacitor-video-player';
 import * as CapacitorDSPlugin from 'capacitor-data-storage-sqlite';
 import * as CapacitorSQLPlugin from 'capacitor-sqlite';

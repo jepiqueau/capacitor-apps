@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|navigation"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
             android:name="com.jeep.app.ionic.angular.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
