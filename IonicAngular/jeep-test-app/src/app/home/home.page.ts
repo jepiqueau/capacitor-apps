@@ -126,6 +126,7 @@ export class HomePage {
     let ret4: boolean = false;
     let ret5: boolean = false;
     let ret6: boolean = false;
+
     let result: boolean = await this._wrapperStorage.openStore({});
     if(result){
 //      this.platform = this.storage.platform;
