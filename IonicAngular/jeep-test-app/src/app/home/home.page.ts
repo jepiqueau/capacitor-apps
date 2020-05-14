@@ -14,11 +14,11 @@ const videoFrom:string = "http";
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  bPlatform:boolean;
-  sbPlatform:boolean;
+  public bPlatform: boolean = false;
+  public aPlatform: boolean = false;
+  public sbPlatform:boolean;
   private _videoPlayer: any = {};
   private _vpPlatform: string = "web";
-  private _url: string;
   private _storage: any = {};
   private _stPlatform: string = "web";
   private _wrapperStorage: any = {};
@@ -26,6 +26,19 @@ export class HomePage {
   private _sqPlatform: string = "web";
   private _cardStorage: HTMLIonCardElement;
   private _cardSQLite: HTMLIonCardElement;
+  private _url: string = null;
+  private _mp4: string = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
+  //private _hls: string = "https://irtdashreference-i.akamaihd.net/dash/live/901161/keepixo1/playlistBR.m3u8";
+  //private _hls: string = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8";
+  //private _hls: string = "http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
+  //private _hls: string = "https://fdhsfhsrfhfgh!!?.data.mediastore.ap-southeast-2.amazonaws.com/p/index.m3u8";
+  //private _hls: string = "https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560.m3u8";
+  private _hls: string = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+  //private _mpd: string = "https://irtdashreference-i.akamaihd.net/dash/live/901161/keepixo1/manifestBR.mpd";
+  private _mpd: string = "https://bitmovin-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd";
+  private _smooth : string ="https://test.playready.microsoft.com/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism/manifest";
+  private _webm: string = "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f1/Sintel_movie_4K.webm/Sintel_movie_4K.webm.720p.webm";
+  private _cmaf: string = "https://tv-develop-output-no9tr3ka.s3-ap-southeast-2.amazonaws.com/creating-an-issuetesting-cmaf.cmfv";
 
 
   constructor() {}
@@ -40,12 +53,10 @@ export class HomePage {
       this._url = "public/assets/video/video.mp4";
     } else if (this._vpPlatform === "android") {
       this._url ="raw/video";
+      this.aPlatform = true;
     } else {
       this.bPlatform = true;
       this._url = "assets/video/video.mp4";
-    }
-    if (videoFrom === "http") {
-      this._url = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
     }
     // setup the storage
     const store:any = await setStorage();
@@ -66,7 +77,25 @@ export class HomePage {
     this._cardSQLite = document.querySelector('.card-sqlite');
 
   }
-  async testVideoPlayerPlugin() {
+  async testVideoPlayerPlugin(vType:string) {
+    if (videoFrom === "http") {
+      if(vType === "mp4") {
+        this._url = this._mp4;
+      } else if (vType === "webm") {
+        this._url = this._webm;
+      } else if (vType === "hls") {
+        this._url = this._hls;
+      } else if (vType === "mpd") {
+        this._url = this._mpd;
+      } else if (vType === "smooth") {
+        this._url = this._smooth;
+/*      } else if (vType === "ytube") {
+        this._url = this._ytube;
+*/
+      } else {
+        console.log("Video format not supported");
+      }
+    }
     this._cardStorage.style.display = "contents";
     this._cardSQLite.style.display = "contents";
     if(!this._cardStorage.classList.contains("hidden")) this._cardStorage.classList.add('hidden');
@@ -74,7 +103,7 @@ export class HomePage {
     document.addEventListener('jeepCapVideoPlayerPlay', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPlay ', e.detail)}, false);
     document.addEventListener('jeepCapVideoPlayerPause', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPause ', e.detail)}, false);
     document.addEventListener('jeepCapVideoPlayerEnded', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerEnded ', e.detail)}, false);
-    const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url});
+    const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId:"fullscreen",componentTag:"app-home"});
   }
   async testStoragePlugin() {
     this._cardStorage.style.display = "initial";
@@ -594,14 +623,29 @@ export class HomePage {
     let retRun1: boolean = false;
     let retRun2: boolean = false;
     let retClose: boolean = false;
+
     let echo:any = await this._sqlite.echo({value:"Hello from JEEP"});
     console.log("echo ",echo)
-    // Delete the Database to enable restart
+
+    // delete databases to enable test restart
     // as after the first pass the database is encrypted
     if(this._sqPlatform === "ios" || this._sqPlatform === "android") {
-      const resDel: any = await this._sqlite.deleteDatabase({database:"testsqlite"});
-      console.log("Delete database testsqlite ", resDel.result.toString());
+      // check if the database testing exists 
+      let result: any = await this._sqlite.isDBExists({database:"testsqlite"}); 
+      if(result.result) {
+        // open the DB
+        let resOpen = await this._sqlite.open({database:"testsqlite",encrypted:true,mode:"secret"}); 
+        if(resOpen.result) {
+          let resDel: any = await this._sqlite.deleteDatabase({database:"testsqlite"});
+          if(!resDel.result) {
+            console.log("Error in deleting the database testsqlite");
+          }
+        } else {
+          console.log("Error database testsqlite does not exist");
+        }
+      }
     }
+
 
     // Open Database
     let result:any = await this._sqlite.open({database:"testsqlite"});
@@ -629,7 +673,7 @@ export class HomePage {
       console.log('sqlcmd ',sqlcmd)
       var retExe: any = await this._sqlite.execute({statements:sqlcmd});
       console.log('retExe ',retExe.changes)
-      retExecute1 = retExe.changes === 0 || retExe.changes === 1 ? true : false;
+      retExecute1 = retExe.changes.changes === 0 || retExe.changes.changes === 1 ? true : false;
       if (retExecute1) {
         document.querySelector('.execute1').classList.remove('display');        
       }
@@ -642,7 +686,7 @@ export class HomePage {
       COMMIT TRANSACTION;
       `;
       retExe = await this._sqlite.execute({statements:sqlcmd});
-      retExecute2 = retExe.changes >= 1 ? true : false;
+      retExecute2 = retExe.changes.changes === 2 ? true : false;
       if (retExecute2) {
         document.querySelector('.execute2').classList.remove('display');        
       }
@@ -656,7 +700,7 @@ export class HomePage {
       `;
       retExe = await this._sqlite.execute({statements:sqlcmd});
       console.log('retExe.changes ',retExe.changes)
-      retExecute3 = retExe.changes >= 1 ? true : false;
+      retExecute3 = retExe.changes.changes === 2 ? true : false;
       if (retExecute3) {
         document.querySelector('.execute3').classList.remove('display');        
       }
@@ -708,7 +752,8 @@ export class HomePage {
       sqlcmd = "INSERT INTO users (name,email,age) VALUES (?,?,?)";
       let values: Array<any>  = ["Simpson","Simpson@example.com",69];
       var retRun: any = await this._sqlite.run({statement:sqlcmd,values:values});
-      retRun1 = retRun.changes === 1 ? true : false;
+      retRun1 = retRun.changes.changes === 1 &&
+                retRun.changes.lastId === 3 ? true : false;
       if (retRun1) {
         document.querySelector('.run1').classList.remove('display');        
       }
@@ -716,7 +761,8 @@ export class HomePage {
       // Insert a new User with SQL
       sqlcmd = `INSERT INTO users (name,email,age) VALUES ("Brown","Brown@example.com",15)`;
       retRun = await this._sqlite.run({statement:sqlcmd,values:[]});
-      retRun2 = retRun.changes === 1 ? true : false;
+      retRun2 = retRun.changes.changes === 1 &&
+                retRun.changes.lastId === 4 ? true : false;
       if (retRun2) {
         document.querySelector('.run2').classList.remove('display');        
       }
@@ -769,10 +815,21 @@ export class HomePage {
     // Delete the Database to enable restart
     // as after the first pass the secret phrase is set to the new secret phrase
     if(this._sqPlatform === "ios" || this._sqPlatform === "android") {
-      const resDel: any =  await this._sqlite.deleteDatabase({database:"encryptedsqlite"});
-      console.log("Delete database encryptedsqlite ", resDel.result.toString());
-    }
-    // Open Database
+      // check if the database testing exists 
+      let result: any = await this._sqlite.isDBExists({database:"encryptedsqlite"}); 
+      if(result.result) {
+        // open the DB
+        let resOpen = await this._sqlite.open({database:"encryptedsqlite",encrypted:true,mode:"secret"}); 
+        if(resOpen.result) {
+          let resDel: any = await this._sqlite.deleteDatabase({database:"encryptedsqlite"});
+          if(!resDel.result) {
+            console.log("Error in deleting the database encryptedsqlite");
+          }
+        } else {
+          console.log("Error database encryptedsqlite does not exist");
+        }
+      }
+    }    // Open Database
 
     let result:any = await this._sqlite.open({database:"encryptedsqlite",encrypted:true,mode:"secret"});
     console.log("Open database : " + result.result);
@@ -792,7 +849,7 @@ export class HomePage {
       console.log('sqlcmd ',sqlcmd)
       var retExe: any = await this._sqlite.execute({statements:sqlcmd});
       console.log('retExe ',retExe.changes)
-      const retExecute1:Boolean  = retExe.changes === 0 || retExe.changes === 1 ? true : false;
+      const retExecute1:Boolean  = retExe.changes.changes === 0 || retExe.changes.changes === 1 ? true : false;
       // Insert some Contacts
       sqlcmd = `
       BEGIN TRANSACTION;
@@ -802,7 +859,7 @@ export class HomePage {
       COMMIT TRANSACTION;
       `;
       retExe = await this._sqlite.execute({statements:sqlcmd});
-      const retExecute2: Boolean = retExe.changes >= 1 ? true : false;
+      const retExecute2: Boolean = retExe.changes.changes === 2 ? true : false;
       // Select all Contacts
       sqlcmd = "SELECT * FROM contacts";
       const retSelect = await this._sqlite.query({statement:sqlcmd,values:[]});

@@ -19,6 +19,9 @@ export class EmbeddedPage {
     private _results: Array<any> = [];
     private _videoPlayer: any = {};
     private _vpPlatform: string = "web";
+    private _timer1: any;
+    private _timer2: any;
+    private _timer3: any;
   
     constructor() { 
     }
@@ -53,15 +56,15 @@ export class EmbeddedPage {
             listEl.appendChild(itemEl);
             const res:any  = await this._videoPlayer.initPlayer(
                 {mode:"embedded",url:this.videoList[i],
-                playerId:this.itemId[i],width:480,height:270
+                playerId:this.itemId[i],componentTag:"app-embedded",width:480,height:270
             });
             this._results = [...this._results,res];
         }
-    
+   
         // Tests the API
         const play = await this._videoPlayer.play({playerId:"bigbuckbunny720psurround"});
         console.log('const play ', play);
-        setTimeout(async () => {
+        this._timer1 = setTimeout(async () => {
             const pause = await this._videoPlayer.pause({playerId:"bigbuckbunny720psurround"});
             console.log('const pause ', pause);
             const volume = await this._videoPlayer.getVolume({playerId:"bigbuckbunny720psurround"});
@@ -80,10 +83,10 @@ export class EmbeddedPage {
             console.log('const setMuted ', setMuted);
             const muted = await this._videoPlayer.getMuted({playerId:"bigbuckbunny720psurround"});
             console.log('const muted ', muted);
-            setTimeout(async () => {
+            this._timer2 = setTimeout(async () => {
                 const play = await this._videoPlayer.play({playerId:"bigbuckbunny720psurround"});
                 console.log('const play ', play);
-                setTimeout(async () => {
+                this._timer3 = setTimeout(async () => {
                     const setMuted = await this._videoPlayer.setMuted({playerId:"bigbuckbunny720psurround",muted:false});
                     console.log('const setMuted 1 ', setMuted);
                     const muted = await this._videoPlayer.getMuted({playerId:"bigbuckbunny720psurround"});
@@ -94,5 +97,12 @@ export class EmbeddedPage {
    
         },50000);
     }
+    
+    async ngOnDestroy() {
+        clearTimeout(this._timer3);
+        clearTimeout(this._timer2);
+        clearTimeout(this._timer1);
+        const res:any  = await this._videoPlayer.stopAllPlayers();
 
+    }
 }
